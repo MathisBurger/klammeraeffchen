@@ -8,16 +8,18 @@ import (
 	"klammerAeffchen/internal/types"
 )
 
-func ConnectToChannelWithUserId(dc *discordgo.Session, userId string) string {
+func ConnectToChannelWithUserId(dc *discordgo.Session, userId string) {
 	vs := getChannelWithUserId(dc, userId)
 	if vs == nil {
-		return "User not in channel"
+		return
 	}
-	_, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
+	vc, err := dc.ChannelVoiceJoin("1231189914100437043", "1231189914557747243", false, false)
 	if err != nil {
-		return err.Error()
+		fmt.Println(err.Error())
 	}
-	return "Successfully joined channel"
+	for {
+		_ = <-vc.OpusRecv
+	}
 }
 
 func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket.Conn) {
@@ -42,7 +44,7 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		Message: "Start playing sound",
 		Status:  200,
 	})
-	err = player.Play(sound, vc)
+	err = player.Play(sound, vc, false)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

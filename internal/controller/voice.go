@@ -3,26 +3,26 @@ package controller
 import (
 	_ "encoding/json"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/contrib/websocket"
+	"github.com/mitchellh/mapstructure"
 	"klammerAeffchen/internal/action"
+	"klammerAeffchen/internal/types"
+	"net/http"
 )
 
 type voiceConnectRequest struct {
 	UserId string `json:"userId"`
 }
 
-type voiceConnectResponse struct {
-	Message string `json:"message"`
-}
-
-func ConnectToVoice(ctx *fiber.Ctx) error {
+func ConnectToVoice(c *websocket.Conn, discord *discordgo.Session, content interface{}) {
 	var req voiceConnectRequest
-	if err := ctx.BodyParser(&req); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	if err := mapstructure.Decode(content, &req); err != nil {
+		_ = c.WriteJSON(types.WebsocketResponse{
+			Message: "Invalid type for voiceConnectRequest",
+			Status:  http.StatusNotAcceptable,
+		})
+		return
 	}
-	discord, _ := ctx.Locals("discord").(*discordgo.Session)
-	resp := action.ConnectToChannelWithUserId(discord, req.UserId)
-	return ctx.JSON(voiceConnectResponse{
-		Message: resp,
-	})
+	action.ConnectToChannelWithUserId(discord, req.UserId)
+
 }

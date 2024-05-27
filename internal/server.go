@@ -28,7 +28,6 @@ func InitializeWebServer(config configuration.Config, discord *discordgo.Session
 		return c.SendString("Hello, World!")
 	})
 	app.Get("/login", controller.GetOAuthURLForBot)
-	app.Post("/api/connect", controller.ConnectToVoice)
 	app.Post("/api/uploadAudio", controller.UploadAudio)
 	listenDef := ":" + strconv.Itoa(int(config.ServerPort))
 	err := app.Listen(listenDef)
