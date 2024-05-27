@@ -5,7 +5,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"klammerAeffchen/internal/action"
-	"klammerAeffchen/pkg"
 )
 
 type voiceConnectRequest struct {
@@ -18,8 +17,7 @@ type voiceConnectResponse struct {
 
 func ConnectToVoice(ctx *fiber.Ctx) error {
 	var req voiceConnectRequest
-	err := pkg.HandleJsonUnmarshal(ctx, &req)
-	if err != nil {
+	if err := ctx.BodyParser(&req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 	discord, _ := ctx.Locals("discord").(*discordgo.Session)
