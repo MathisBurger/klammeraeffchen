@@ -1,15 +1,21 @@
-package internal
+package main
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"github.com/kelseyhightower/envconfig"
+	"klammerAeffchen/internal"
 	"klammerAeffchen/internal/configuration"
 	"log"
 	"os"
 	"os/signal"
 )
 
-func InitializeDiscordBot(config *configuration.Config) {
-
+func main() {
+	var config configuration.Config
+	err := envconfig.Process("klammeraeffchen", &config)
+	if err != nil {
+		log.Fatal(err)
+	}
 	discord, err := discordgo.New("Bot " + config.BotToken)
 	if err != nil {
 		panic(err)
@@ -19,7 +25,7 @@ func InitializeDiscordBot(config *configuration.Config) {
 	if err != nil {
 		panic(err)
 	}
-
+	go internal.InitializeWebServer(config, discord)
 	defer discord.Close()
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
