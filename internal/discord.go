@@ -2,12 +2,13 @@ package internal
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"klammerAeffchen/internal/configuration"
 	"log"
 	"os"
 	"os/signal"
 )
 
-func InitializeDiscordBot(config *Config) {
+func InitializeDiscordBot(config *configuration.Config) {
 
 	discord, err := discordgo.New("Bot " + config.BotToken)
 	if err != nil {
