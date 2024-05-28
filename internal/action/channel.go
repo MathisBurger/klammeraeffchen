@@ -28,6 +28,7 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		_ = ws.WriteJSON(types.WebsocketResponse{
 			Message: "You are not in channel",
 			Status:  200,
+			Content: nil,
 		})
 		return
 	}
@@ -37,12 +38,14 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		_ = ws.WriteJSON(types.WebsocketResponse{
 			Message: "Cannot connect to channel " + err.Error(),
 			Status:  200,
+			Content: nil,
 		})
 		return
 	}
 	_ = ws.WriteJSON(types.WebsocketResponse{
 		Message: "Start playing sound",
 		Status:  200,
+		Content: nil,
 	})
 	err = player.Play(sound, vc, false)
 	if err != nil {

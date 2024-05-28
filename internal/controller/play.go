@@ -11,10 +11,9 @@ import (
 
 type playSoundRequest struct {
 	FileName string `json:"fileName"`
-	UserId   string `json:"userId"`
 }
 
-func PlaySound(c *websocket.Conn, discord *discordgo.Session, content interface{}) {
+func PlaySound(c *websocket.Conn, discord *discordgo.Session, content interface{}, userId string) {
 	var contentRequest playSoundRequest
 	if err := mapstructure.Decode(content, &contentRequest); err != nil {
 		_ = c.WriteJSON(types.WebsocketResponse{
@@ -24,5 +23,5 @@ func PlaySound(c *websocket.Conn, discord *discordgo.Session, content interface{
 		return
 	}
 	// Sends websocket response automatically
-	action.PlaySound(discord, contentRequest.UserId, contentRequest.FileName, c)
+	action.PlaySound(discord, userId, contentRequest.FileName, c)
 }

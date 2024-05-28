@@ -3,15 +3,46 @@ package controller
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/contrib/websocket"
+	"klammerAeffchen/internal/action"
+	"klammerAeffchen/internal/configuration"
 	"klammerAeffchen/internal/types"
 )
 
 const (
-	ACTION_PLAY    = "PLAY"
-	ACTION_CONNECT = "CONNECT"
+	ActionPlay    = "PLAY"
+	ActionConnect = "CONNECT"
 )
 
 func ApplicationWebsocket(c *websocket.Conn) {
+	code := c.Query("code", "")
+	config, _ := c.Locals("configuration").(*configuration.Config)
+	if code == "" {
+		_ = c.Close()
+		return
+	}
+	auth, err := action.AuthorizeWithCode(code, config)
+	if err != nil {
+		_ = c.Close()
+		return
+	}
+	_ = c.WriteJSON(types.WebsocketResponse{
+		Message: "Successfully authorized",
+		Status:  200,
+		Content: types.WebsocketAuthModel{
+			RefreshToken: auth.RefreshToken,
+			ExpiresIn:    auth.ExpiresIn,
+		},
+	})
+	me, err := action.GetUserModel(auth)
+	if err != nil {
+		_ = c.Close()
+		return
+	}
+	_ = c.WriteJSON(types.WebsocketResponse{
+		Message: "User fetched successfully",
+		Status:  200,
+		Content: me,
+	})
 	discord, _ := c.Locals("discord").(*discordgo.Session)
 	var msg types.WebsocketMessage
 	for {
@@ -21,15 +52,16 @@ func ApplicationWebsocket(c *websocket.Conn) {
 			return
 		}
 		switch msg.Action {
-		case ACTION_PLAY:
-			PlaySound(c, discord, msg.Content)
+		case ActionPlay:
+			PlaySound(c, discord, msg.Content, me.Id)
 			break
-		case ACTION_CONNECT:
-			ConnectToVoice(c, discord, msg.Content)
+		case ActionConnect:
+			ConnectToVoice(c, discord, me.Id)
 		default:
 			_ = c.WriteJSON(types.WebsocketResponse{
 				Message: "Cannot handle message",
 				Status:  400,
+				Content: nil,
 			})
 			break
 		}
