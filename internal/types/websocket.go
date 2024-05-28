@@ -2,6 +2,13 @@ package types
 
 import "time"
 
+const (
+	AuthRefreshToken = "AUTH_REFRESH_TOKEN"
+	AuthUserID       = "AUTH_USER_ID"
+	ActionPlay       = "PLAY"
+	ActionConnect    = "CONNECT"
+)
+
 type WebsocketMessage struct {
 	Action  string      `json:"action"`
 	Content interface{} `json:"content"`
@@ -11,6 +18,7 @@ type WebsocketResponse struct {
 	Message string      `json:"message"`
 	Status  int         `json:"status"`
 	Content interface{} `json:"content"`
+	Action  string      `json:"action"`
 }
 
 type WebsocketAuthModel struct {

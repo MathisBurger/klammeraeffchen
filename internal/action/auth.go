@@ -3,11 +3,14 @@ package action
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/ravener/discord-oauth2"
 	"golang.org/x/oauth2"
 	"io"
 	"klammerAeffchen/internal/configuration"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 type authRequest struct {
@@ -39,6 +42,38 @@ func AuthorizeWithCode(code string, config configuration.Config) (*oauth2.Token,
 		return nil, err
 	}
 	return token, nil
+}
+
+func AuthorizeWithToken(token string, config configuration.Config) (*oauth2.Token, error) {
+	authUrl := "https://discord.com/api/v10/oauth2/token"
+	data := url.Values{
+		"client_id":     {config.BotClientID},
+		"client_secret": {config.ClientSecret},
+		"grant_type":    {"refresh_token"},
+		"refresh_token": {token},
+	}
+	request, _ := http.NewRequest(http.MethodPost, authUrl, strings.NewReader(data.Encode()))
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.SetBasicAuth(config.BotClientID, config.ClientSecret)
+	res, err := http.DefaultClient.Do(request)
+	defer res.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	var response oauth2.Token
+	err = json.Unmarshal(bodyBytes, &response)
+	if err != nil {
+		return nil, err
+	}
+	if response.AccessToken == "" {
+		return nil, errors.New("access_token is empty")
+	}
+	return &response, nil
 }
 
 func GetUserModel(auth *oauth2.Token) (*UserResponseModel, error) {

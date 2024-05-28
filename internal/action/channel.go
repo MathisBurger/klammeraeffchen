@@ -13,7 +13,7 @@ func ConnectToChannelWithUserId(dc *discordgo.Session, userId string) {
 	if vs == nil {
 		return
 	}
-	vc, err := dc.ChannelVoiceJoin("1231189914100437043", "1231189914557747243", false, false)
+	vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -29,6 +29,7 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 			Message: "You are not in channel",
 			Status:  200,
 			Content: nil,
+			Action:  types.ActionPlay,
 		})
 		return
 	}
