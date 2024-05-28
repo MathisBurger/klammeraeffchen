@@ -23,6 +23,8 @@ func ConnectToVoice(c *websocket.Conn, discord *discordgo.Session, content inter
 		})
 		return
 	}
-	action.ConnectToChannelWithUserId(discord, req.UserId)
-
+	c.SetCloseHandler(func(code int, text string) error {
+		return c.Close()
+	})
+	go action.ConnectToChannelWithUserId(discord, req.UserId)
 }
