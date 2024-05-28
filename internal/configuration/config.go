@@ -7,5 +7,5 @@ type Config struct {
 	ClientSecret string
 	ServerPort   int32
 	Host         string
-	WebHost      string
+	OAuthUrl     string
 }

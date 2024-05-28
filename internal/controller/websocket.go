@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/contrib/websocket"
 	"klammerAeffchen/internal/action"
@@ -15,13 +16,14 @@ const (
 
 func ApplicationWebsocket(c *websocket.Conn) {
 	code := c.Query("code", "")
-	config, _ := c.Locals("configuration").(*configuration.Config)
+	config, _ := c.Locals("configuration").(configuration.Config)
 	if code == "" {
 		_ = c.Close()
 		return
 	}
 	auth, err := action.AuthorizeWithCode(code, config)
 	if err != nil {
+		fmt.Println(err.Error())
 		_ = c.Close()
 		return
 	}
@@ -30,11 +32,12 @@ func ApplicationWebsocket(c *websocket.Conn) {
 		Status:  200,
 		Content: types.WebsocketAuthModel{
 			RefreshToken: auth.RefreshToken,
-			ExpiresIn:    auth.ExpiresIn,
+			ExpiresIn:    auth.Expiry,
 		},
 	})
 	me, err := action.GetUserModel(auth)
 	if err != nil {
+		fmt.Println(err.Error())
 		_ = c.Close()
 		return
 	}

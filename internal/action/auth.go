@@ -1,19 +1,18 @@
 package action
 
 import (
-	"bytes"
+	"context"
 	"encoding/json"
+	"github.com/ravener/discord-oauth2"
+	"golang.org/x/oauth2"
 	"io"
 	"klammerAeffchen/internal/configuration"
 	"net/http"
 )
 
-type AuthResponseInitial struct {
-	AccessToken  string `json:"access_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int    `json:"expires_in"`
-	RefreshToken string `json:"refresh_token"`
-	Scope        string `json:"scope"`
+type authRequest struct {
+	GrantType string `json:"grant_type"`
+	Code      string `json:"code"`
 }
 
 type meResponse struct {
@@ -25,31 +24,22 @@ type UserResponseModel struct {
 	Username string `json:"username"`
 }
 
-func AuthorizeWithCode(code string, config *configuration.Config) (*AuthResponseInitial, error) {
-	url := "https://discord.com/api/v10/oauth2/token"
-	body := `{"grant_type": "authorization_code", "code": "` + code + `"}`
-	bodySteam := bytes.NewReader([]byte(body))
-	request, _ := http.NewRequest(http.MethodPost, url, bodySteam)
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	request.SetBasicAuth(config.BotClientID, config.ClientSecret)
-	res, err := http.DefaultClient.Do(request)
-	defer res.Body.Close()
+func AuthorizeWithCode(code string, config configuration.Config) (*oauth2.Token, error) {
+	conf := &oauth2.Config{
+		RedirectURL:  "http://localhost:5173/authWithCode",
+		ClientID:     config.BotClientID,
+		ClientSecret: config.ClientSecret,
+		Scopes:       []string{discord.ScopeIdentify},
+		Endpoint:     discord.Endpoint,
+	}
+	token, err := conf.Exchange(context.Background(), code)
 	if err != nil {
 		return nil, err
 	}
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	var response AuthResponseInitial
-	err = json.Unmarshal(bodyBytes, &response)
-	if err != nil {
-		return nil, err
-	}
-	return &response, nil
+	return token, nil
 }
 
-func GetUserModel(auth *AuthResponseInitial) (*UserResponseModel, error) {
+func GetUserModel(auth *oauth2.Token) (*UserResponseModel, error) {
 	url := "https://discord.com/api/v10/oauth2/@me"
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Set("Authorization", "Bearer "+auth.AccessToken)

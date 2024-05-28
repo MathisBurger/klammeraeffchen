@@ -6,8 +6,19 @@ import (
 )
 
 func GetOAuthURLForBot(ctx *fiber.Ctx) error {
+
+	/*apiUrl := "https://discord.com"
+	resource := ""
+	data := url.Values{}
+	data.Set("grant_type", "authorization_code")
+	data.Set("redirect_uri", "http://localhost:5173/authWithCode")
+	data.Set("code", code)
+
+	u, _ := url.ParseRequestURI(apiUrl)
+	u.Path = resource
+	u.RawQuery = data.Encode()
+	urlStr := fmt.Sprintf("%v", u)*/
 	configRaw := ctx.Locals("configuration")
 	config, _ := configRaw.(configuration.Config)
-	url := "https://discord.com/oauth2/authorize?client_id=" + config.BotClientID + "&response_type=code&redirect_uri=http%3A%2F%2F" + config.WebHost + "%2FauthWithCode&scope=connections"
-	return ctx.Redirect(url)
+	return ctx.Redirect(config.OAuthUrl)
 }
