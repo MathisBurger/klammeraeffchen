@@ -20,8 +20,10 @@ type meResponse struct {
 }
 
 type UserResponseModel struct {
-	Id       string `json:"id"`
-	Username string `json:"username"`
+	Id         string `json:"id"`
+	Username   string `json:"username"`
+	GlobalName string `json:"global_name"`
+	Avatar     string `json:"avatar"`
 }
 
 func AuthorizeWithCode(code string, config configuration.Config) (*oauth2.Token, error) {

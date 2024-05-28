@@ -1,7 +1,17 @@
-<script>
+<script lang="ts">
+	import Navbar from "$lib/navbar.svelte"
 </script>
 
+<svelte:head>
+	<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
+	>
+	<link rel="icon" href="/logo.png" />
+</svelte:head>
+
 <div class="app">
+	<Navbar />
 	<main>
 		<slot />
 	</main>
