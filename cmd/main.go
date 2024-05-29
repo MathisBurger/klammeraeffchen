@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	discord.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildVoiceStates
+	discord.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildVoiceStates | discordgo.IntentsGuildMembers
 	err = discord.Open()
 	if err != nil {
 		panic(err)

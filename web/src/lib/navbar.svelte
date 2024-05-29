@@ -18,7 +18,7 @@
             }
         });
         setTimeout(() => {
-            if (ws === null && $page.url.pathname.indexOf("/dashboard")) {
+            if (ws === null && $page.url.pathname.indexOf("/dashboard") > -1) {
                 goto("/")
             }
         }, 1000);

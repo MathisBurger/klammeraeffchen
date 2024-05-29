@@ -70,6 +70,10 @@ func ApplicationWebsocket(c *websocket.Conn) {
 			break
 		case types.ActionConnect:
 			ConnectToVoice(c, discord, me.Id)
+			break
+		case types.ActionGetCommonGuilds:
+			CommonGuilds(c, discord, me)
+			break
 		default:
 			_ = c.WriteJSON(types.WebsocketResponse{
 				Message: "Cannot handle message",

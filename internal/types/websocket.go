@@ -3,10 +3,11 @@ package types
 import "time"
 
 const (
-	AuthRefreshToken = "AUTH_REFRESH_TOKEN"
-	AuthUserID       = "AUTH_USER_ID"
-	ActionPlay       = "PLAY"
-	ActionConnect    = "CONNECT"
+	AuthRefreshToken      = "AUTH_REFRESH_TOKEN"
+	AuthUserID            = "AUTH_USER_ID"
+	ActionPlay            = "PLAY"
+	ActionConnect         = "CONNECT"
+	ActionGetCommonGuilds = "GET_COMMON_GUILDS"
 )
 
 type WebsocketMessage struct {
