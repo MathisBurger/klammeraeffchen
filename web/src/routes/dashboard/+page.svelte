@@ -1,17 +1,16 @@
 <script lang="ts">
-    import {websocket} from "../authWithCode/stores";
-    import type {CommonGuild} from "$lib/guild";
-    import CommonGuildSelect from "$lib/commomGuildSelect.svelte"
+    import {discordUser, websocket} from "../authWithCode/stores";
 
     const formSubmitAction = process.env.NODE_ENV === "production" ? "/api/uploadAudio" : "http://localhost:3000/api/uploadAudio"
     let ws: any | WebSocket = null;
-    let commonGuilds: CommonGuild[] = [];
-    let selectedGuild: CommonGuild | null = null;
     let shortAuth: string|null = null;
     let modalOpen = false;
     let selectedFiles: FileList | null = null;
     let sounds: string[] = [];
     let currentPlaying: string|null = null;
+    let dcUser: any = null;
+
+    discordUser.subscribe((u) => dcUser = u);
 
     $: isPlayed = (s: string): boolean => {
         return s === currentPlaying;
@@ -46,14 +45,16 @@
     }
 
     const playSound = (sound: string) => {
-        if (ws !== null) {
-            ws.send(JSON.stringify({
-                action: "PLAY",
-                content: {
-                    fileName: sound
-                }
-            }))
-        }
+        fetch((process.env.NODE_ENV === "production" ? "/api/playSound" : "http://localhost:3000/api/playSound"), {
+            method: "POST",
+            body: JSON.stringify({
+                fileName: sound,
+                userId: dcUser.id
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
     }
 
     websocket.subscribe((nws) => {
@@ -61,9 +62,6 @@
         if (ws !== null) {
             ws.onmessage = (msg: MessageEvent) => {
                 const json = JSON.parse(msg.data);
-                if (json.action === "GET_COMMON_GUILDS") {
-                    commonGuilds = json.content.guilds;
-                }
                 if (json.action === "GET_SHORT_AUTH") {
                     shortAuth = json.content;
                 }
@@ -78,9 +76,6 @@
                     }
                 }
             }
-            ws.send(JSON.stringify({
-                action: "GET_COMMON_GUILDS"
-            }));
             ws.send(JSON.stringify({
                 action: "GET_ALL_SOUNDS"
             }));
@@ -129,10 +124,7 @@
 </div>
 <div class="fixed-grid has-10-cols">
     <div class="grid">
-        <div class="cell is-col-span-2">
-            <CommonGuildSelect commonGuilds={commonGuilds} bind:selectedGuild={selectedGuild}/>
-        </div>
-        <div class="cell is-col-span-7">
+        <div class="cell is-col-span-9">
             {#each sounds as sound (sound)}
                 <div class="cell mt-2">
                     <div class="card" on:click={() => playSound(sound)} class:greenCard={isPlayed(sound)}>

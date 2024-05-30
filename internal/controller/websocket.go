@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/contrib/websocket"
 	"golang.org/x/oauth2"
 	"klammerAeffchen/internal/action"
@@ -56,7 +55,6 @@ func ApplicationWebsocket(c *websocket.Conn) {
 		Content: me,
 		Action:  types.AuthUserID,
 	})
-	discord, _ := c.Locals("discord").(*discordgo.Session)
 	types.WebsocketConnections = append(types.WebsocketConnections, c)
 	c.SetCloseHandler(closeHandler(c))
 	var msg types.WebsocketMessage
@@ -67,12 +65,6 @@ func ApplicationWebsocket(c *websocket.Conn) {
 			return
 		}
 		switch msg.Action {
-		case types.ActionPlay:
-			PlaySound(c, discord, msg.Content, me.Id)
-			break
-		case types.ActionGetCommonGuilds:
-			CommonGuilds(c, discord, me)
-			break
 		case types.ActionGetShortAuth:
 			RequestShortAuth(c)
 			break
