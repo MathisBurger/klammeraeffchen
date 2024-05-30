@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {discordUser, websocket} from "../authWithCode/stores";
+    import {websocket} from "../authWithCode/stores";
 
     const formSubmitAction = process.env.NODE_ENV === "production" ? "/api/uploadAudio" : "http://localhost:3000/api/uploadAudio"
     let ws: any | WebSocket = null;
@@ -7,14 +7,6 @@
     let modalOpen = false;
     let selectedFiles: FileList | null = null;
     let sounds: string[] = [];
-    let currentPlaying: string|null = null;
-    let dcUser: any = null;
-
-    discordUser.subscribe((u) => dcUser = u);
-
-    $: isPlayed = (s: string): boolean => {
-        return s === currentPlaying;
-    }
 
     const closeModal = () => modalOpen = false;
     const openModal = () => {
@@ -54,13 +46,6 @@
                 }
                 if (json.action === "GET_ALL_SOUNDS") {
                     sounds = json.content.sounds;
-                }
-                if (json.action === "PLAY_STATUS_UPDATED") {
-                    if (json.content.status) {
-                        currentPlaying = json.content.audio_file;
-                    } else {
-                        currentPlaying = null;
-                    }
                 }
             }
             ws.send(JSON.stringify({
@@ -114,7 +99,7 @@
         <div class="cell is-col-span-9">
             {#each sounds as sound (sound)}
                 <div class="cell mt-2">
-                    <div class="card" class:greenCard={isPlayed(sound)}>
+                    <div class="card">
                         <div class="card-content">
                             <div class="content">
                                 {sound}
@@ -129,9 +114,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .greenCard {
-        background: #25af06;
-    }
-</style>

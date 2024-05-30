@@ -8,6 +8,7 @@ import (
 	"log"
 )
 
+// Initializes the web server application
 func main() {
 	var config configuration.Config
 	err := envconfig.Process("klammeraeffchen", &config)

@@ -7,10 +7,12 @@ import (
 	"strings"
 )
 
+// Response with all sounds
 type allSoundsData struct {
 	Sounds []string `json:"sounds"`
 }
 
+// GetAllSounds gets all sounds that are currently supported
 func GetAllSounds(c *websocket.Conn) {
 	entries, _ := os.ReadDir("./uploads")
 	var data []string

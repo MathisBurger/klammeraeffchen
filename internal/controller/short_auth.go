@@ -6,6 +6,8 @@ import (
 	"klammerAeffchen/pkg"
 )
 
+// Gets the request for a short living auth and sends the response
+// through the websocket
 func RequestShortAuth(c *websocket.Conn) {
 	authChannel := c.Locals("auth").(chan *pkg.ShortAuthMessage)
 	authChannel <- &pkg.ShortAuthMessage{

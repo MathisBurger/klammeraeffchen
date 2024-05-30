@@ -5,16 +5,19 @@ const (
 	RequestTypeAuth  = "AUTH"
 )
 
+// Short auth message
 type ShortAuthMessage struct {
 	Type string
 	Data interface{}
 }
 
+// Token for short auth
 type shortAuthToken struct {
 	UserID string
 	Token  string
 }
 
+// Handles the short auth
 func ShortShortAuthHandler(channel chan *ShortAuthMessage) {
 	var validTokens []*shortAuthToken
 

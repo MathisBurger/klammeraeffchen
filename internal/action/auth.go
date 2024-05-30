@@ -13,15 +13,18 @@ import (
 	"strings"
 )
 
+// Request for authorization
 type authRequest struct {
 	GrantType string `json:"grant_type"`
 	Code      string `json:"code"`
 }
 
+// Response with user model
 type meResponse struct {
 	User UserResponseModel `json:"user"`
 }
 
+// The response user model
 type UserResponseModel struct {
 	Id         string `json:"id"`
 	Username   string `json:"username"`
@@ -29,6 +32,7 @@ type UserResponseModel struct {
 	Avatar     string `json:"avatar"`
 }
 
+// AuthorizeWithCode authorizes the user with a code
 func AuthorizeWithCode(code string, config configuration.Config) (*oauth2.Token, error) {
 	conf := &oauth2.Config{
 		RedirectURL:  "http://localhost:5173/authWithCode",
@@ -44,6 +48,7 @@ func AuthorizeWithCode(code string, config configuration.Config) (*oauth2.Token,
 	return token, nil
 }
 
+// AuthorizeWithToken authorizes the user with a token
 func AuthorizeWithToken(token string, config configuration.Config) (*oauth2.Token, error) {
 	authUrl := "https://discord.com/api/v10/oauth2/token"
 	data := url.Values{
@@ -76,6 +81,7 @@ func AuthorizeWithToken(token string, config configuration.Config) (*oauth2.Toke
 	return &response, nil
 }
 
+// GetUserModel gets the user model of the currently authorized user
 func GetUserModel(auth *oauth2.Token) (*UserResponseModel, error) {
 	url := "https://discord.com/api/v10/oauth2/@me"
 	request, _ := http.NewRequest(http.MethodGet, url, nil)

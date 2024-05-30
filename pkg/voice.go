@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// Plays an audio file
 func PlayFile(dc *discordgo.Session, guildID string, channelID string, file string) {
 	vc, err := dc.ChannelVoiceJoin(guildID, channelID, false, true)
 	if err != nil {

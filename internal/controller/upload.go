@@ -11,6 +11,7 @@ type uploadAudioResponse struct {
 	Message string `json:"message"`
 }
 
+// Handles the audio upload via rest
 func UploadAudio(ctx *fiber.Ctx) error {
 	file, err := ctx.FormFile("audiofile")
 	authCode := ctx.Query("authCode", "")

@@ -9,6 +9,7 @@ import (
 	"klammerAeffchen/internal/types"
 )
 
+// Handles all websocket requests
 func ApplicationWebsocket(c *websocket.Conn) {
 	code := c.Query("code", "")
 	refreshToken := c.Query("refreshToken", "")
@@ -82,6 +83,7 @@ func ApplicationWebsocket(c *websocket.Conn) {
 	}
 }
 
+// Handler that is executed on close
 func closeHandler(c *websocket.Conn) func(code int, text string) error {
 	return func(code int, text string) error {
 		var newConns []*websocket.Conn

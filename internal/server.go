@@ -10,6 +10,7 @@ import (
 	"strconv"
 )
 
+// Initializes the webserver that runs the whole web application
 func InitializeWebServer(config configuration.Config, authChannel chan *pkg.ShortAuthMessage) {
 	app := fiber.New()
 	app.Use(func(ctx *fiber.Ctx) error {
@@ -17,10 +18,12 @@ func InitializeWebServer(config configuration.Config, authChannel chan *pkg.Shor
 		ctx.Locals("auth", authChannel)
 		return ctx.Next()
 	})
+
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "http://localhost:5173",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
+
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
@@ -28,9 +31,11 @@ func InitializeWebServer(config configuration.Config, authChannel chan *pkg.Shor
 		}
 		return fiber.ErrUpgradeRequired
 	})
+
 	app.Get("/ws", websocket.New(controller.ApplicationWebsocket))
 	app.Get("/login", controller.GetOAuthURLForBot)
 	app.Post("/api/uploadAudio", controller.UploadAudio)
+
 	listenDef := ":" + strconv.Itoa(int(config.ServerPort))
 	err := app.Listen(listenDef)
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"net/url"
 )
 
+// Gets the oauth for the bot
 func GetOAuthURLForBot(ctx *fiber.Ctx) error {
 
 	configRaw := ctx.Locals("configuration")

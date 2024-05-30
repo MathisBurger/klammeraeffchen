@@ -5,6 +5,8 @@ import (
 	"klammerAeffchen/pkg"
 )
 
+// PlayerSelectHandler handles the user interaction after
+// sound select action
 func PlayerSelectHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	_ = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,

@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// SoundboardCommand is the initial command to render the soundboard options
+// to the channel and provide the opportunity to select
 func SoundboardCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	var options []discordgo.SelectMenuOption
 	entries, _ := os.ReadDir("./uploads")
