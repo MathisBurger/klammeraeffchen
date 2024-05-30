@@ -34,7 +34,7 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		Status:  200,
 		Content: nil,
 	})
-	err = player.Play(sound, vc, false)
+	err = player.Play("./uploads/"+sound, vc, false)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

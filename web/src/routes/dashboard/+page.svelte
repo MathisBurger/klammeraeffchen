@@ -40,6 +40,17 @@
         }
     }
 
+    const playSound = (sound: string) => {
+        if (ws !== null) {
+            ws.send(JSON.stringify({
+                action: "PLAY",
+                content: {
+                    fileName: sound
+                }
+            }))
+        }
+    }
+
     websocket.subscribe((nws) => {
         ws = nws;
         if (ws !== null) {
@@ -113,7 +124,7 @@
             <div class="grid has-3-cols">
                 {#each sounds as sound}
                    <div class="cell">
-                       <div class="card">
+                       <div class="card" on:click={() => playSound(sound)}>
                            <div class="card-content">
                                <div class="content">
                                    {sound}
