@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"klammerAeffchen/pkg"
 	"strings"
 )
 
@@ -12,6 +13,16 @@ type uploadAudioResponse struct {
 
 func UploadAudio(ctx *fiber.Ctx) error {
 	file, err := ctx.FormFile("audiofile")
+	authCode := ctx.Query("authCode", "")
+	authChannel, _ := ctx.Locals("auth").(chan *pkg.ShortAuthMessage)
+	authChannel <- &pkg.ShortAuthMessage{
+		Type: pkg.RequestTypeAuth,
+		Data: authCode,
+	}
+	response := <-authChannel
+	if response.Data.(bool) == false {
+		return fiber.NewError(fiber.StatusUnauthorized)
+	}
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}

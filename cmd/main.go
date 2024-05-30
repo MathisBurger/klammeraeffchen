@@ -5,6 +5,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"klammerAeffchen/internal"
 	"klammerAeffchen/internal/configuration"
+	"klammerAeffchen/pkg"
 	"log"
 	"os"
 	"os/signal"
@@ -25,7 +26,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	go internal.InitializeWebServer(config, discord)
+	authChannel := make(chan *pkg.ShortAuthMessage, 1)
+	go pkg.ShortShortAuthHandler(authChannel)
+	go internal.InitializeWebServer(config, discord, authChannel)
 	defer discord.Close()
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)

@@ -6,14 +6,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"klammerAeffchen/internal/configuration"
 	"klammerAeffchen/internal/controller"
+	"klammerAeffchen/pkg"
 	"strconv"
 )
 
-func InitializeWebServer(config configuration.Config, discord *discordgo.Session) {
+func InitializeWebServer(config configuration.Config, discord *discordgo.Session, authChannel chan *pkg.ShortAuthMessage) {
 	app := fiber.New()
 	app.Use(func(ctx *fiber.Ctx) error {
 		ctx.Locals("configuration", config)
 		ctx.Locals("discord", discord)
+		ctx.Locals("auth", authChannel)
 		return ctx.Next()
 	})
 	app.Use("/ws", func(c *fiber.Ctx) error {

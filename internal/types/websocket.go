@@ -6,9 +6,8 @@ const (
 	AuthRefreshToken      = "AUTH_REFRESH_TOKEN"
 	AuthUserID            = "AUTH_USER_ID"
 	ActionPlay            = "PLAY"
-	ActionConnect         = "CONNECT"
 	ActionGetCommonGuilds = "GET_COMMON_GUILDS"
-	ActionDisconnect      = "DISCONNECT"
+	ActionGetShortAuth    = "GET_SHORT_AUTH"
 )
 
 type WebsocketMessage struct {

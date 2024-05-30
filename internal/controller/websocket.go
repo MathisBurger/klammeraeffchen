@@ -68,14 +68,11 @@ func ApplicationWebsocket(c *websocket.Conn) {
 		case types.ActionPlay:
 			PlaySound(c, discord, msg.Content, me.Id)
 			break
-		case types.ActionConnect:
-			ConnectToVoice(c, discord, me.Id)
-			break
 		case types.ActionGetCommonGuilds:
 			CommonGuilds(c, discord, me)
 			break
-		case types.ActionDisconnect:
-			action.Disconnect(c, discord, me.Id)
+		case types.ActionGetShortAuth:
+			RequestShortAuth(c)
 			break
 		default:
 			_ = c.WriteJSON(types.WebsocketResponse{
