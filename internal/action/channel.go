@@ -8,6 +8,11 @@ import (
 	"klammerAeffchen/internal/types"
 )
 
+type playStatus struct {
+	AudioFile string `json:"audio_file"`
+	Status    bool   `json:"status"`
+}
+
 func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket.Conn) {
 	vs := getChannelWithUserId(dc, userId)
 	if vs == nil {
@@ -34,10 +39,28 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		Status:  200,
 		Content: nil,
 	})
+	_ = ws.WriteJSON(types.WebsocketResponse{
+		Message: "Playing sound",
+		Status:  200,
+		Action:  types.PlayStatusUpdated,
+		Content: playStatus{
+			AudioFile: sound,
+			Status:    true,
+		},
+	})
 	err = player.Play("./uploads/"+sound, vc, false)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	_ = ws.WriteJSON(types.WebsocketResponse{
+		Message: "Playing sound",
+		Status:  200,
+		Action:  types.PlayStatusUpdated,
+		Content: playStatus{
+			AudioFile: sound,
+			Status:    false,
+		},
+	})
 }
 
 func getChannelWithUserId(dc *discordgo.Session, userId string) *discordgo.VoiceState {

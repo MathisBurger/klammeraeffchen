@@ -11,6 +11,11 @@
     let modalOpen = false;
     let selectedFiles: FileList | null = null;
     let sounds: string[] = [];
+    let currentPlaying: string|null = null;
+
+    $: isPlayed = (s: string): boolean => {
+        return s === currentPlaying;
+    }
 
     const closeModal = () => modalOpen = false;
     const openModal = () => {
@@ -64,6 +69,13 @@
                 }
                 if (json.action === "GET_ALL_SOUNDS") {
                     sounds = json.content.sounds;
+                }
+                if (json.action === "PLAY_STATUS_UPDATED") {
+                    if (json.content.status) {
+                        currentPlaying = json.content.audio_file;
+                    } else {
+                        currentPlaying = null;
+                    }
                 }
             }
             ws.send(JSON.stringify({
@@ -121,10 +133,10 @@
             <CommonGuildSelect commonGuilds={commonGuilds} bind:selectedGuild={selectedGuild}/>
         </div>
         <div class="cell is-col-span-7">
-            <div class="grid has-3-cols">
-                {#each sounds as sound}
+            <div class="fixed-grid has-3-cols">
+                {#each sounds as sound (sound)}
                    <div class="cell">
-                       <div class="card" on:click={() => playSound(sound)}>
+                       <div class="card" on:click={() => playSound(sound)} class:greenCard={isPlayed(sound)}>
                            <div class="card-content">
                                <div class="content">
                                    {sound}
@@ -140,3 +152,9 @@
         </div>
     </div>
 </div>
+
+<style>
+    .greenCard {
+        background: #25af06;
+    }
+</style>

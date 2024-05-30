@@ -6,7 +6,6 @@
     export let selectedGuild: CommonGuild|null;
 
     const onClick = (guild: CommonGuild) => () => selectedGuild = guild;
-    console.log(selectedGuild);
 </script>
 
 <aside class="menu">
