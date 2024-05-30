@@ -8,12 +8,7 @@ import (
 	"klammerAeffchen/internal/types"
 )
 
-type playStatus struct {
-	AudioFile string `json:"audio_file"`
-	Status    bool   `json:"status"`
-}
-
-func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket.Conn, audioEndChan chan bool) {
+func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket.Conn) {
 	vs := getChannelWithUserId(dc, userId)
 	if vs == nil {
 		_ = ws.WriteJSON(types.WebsocketResponse{
@@ -24,47 +19,33 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		})
 		return
 	}
-
-	vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
+	vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, true)
 	if err != nil {
-		_ = ws.WriteJSON(types.WebsocketResponse{
-			Message: "Cannot connect to channel " + err.Error(),
-			Status:  200,
-			Content: nil,
-		})
-		return
+		fmt.Println(err.Error())
 	}
-	_ = ws.WriteJSON(types.WebsocketResponse{
-		Message: "Start playing sound",
-		Status:  200,
-		Content: nil,
-	})
 	for _, conn := range types.WebsocketConnections {
 		if conn != nil {
 			_ = conn.WriteJSON(types.WebsocketResponse{
 				Message: "Playing sound",
 				Status:  200,
 				Action:  types.PlayStatusUpdated,
-				Content: playStatus{
+				Content: types.PlayStatus{
 					AudioFile: sound,
 					Status:    true,
 				},
 			})
 		}
 	}
-	dgvoice.PlayAudioFile(vc, "./uploads/"+sound, audioEndChan)
-	err = vc.Disconnect()
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	dgvoice.PlayAudioFile(vc, "./uploads/"+sound, make(<-chan bool))
+	_ = vc.Disconnect()
 	vc.Close()
 	for _, conn := range types.WebsocketConnections {
 		if conn != nil {
-			_ = ws.WriteJSON(types.WebsocketResponse{
+			_ = conn.WriteJSON(types.WebsocketResponse{
 				Message: "Playing sound",
 				Status:  200,
 				Action:  types.PlayStatusUpdated,
-				Content: playStatus{
+				Content: types.PlayStatus{
 					AudioFile: sound,
 					Status:    false,
 				},
