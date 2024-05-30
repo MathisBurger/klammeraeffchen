@@ -74,6 +74,9 @@ func ApplicationWebsocket(c *websocket.Conn) {
 		case types.ActionGetCommonGuilds:
 			CommonGuilds(c, discord, me)
 			break
+		case types.ActionDisconnect:
+			action.Disconnect(c, discord, me.Id)
+			break
 		default:
 			_ = c.WriteJSON(types.WebsocketResponse{
 				Message: "Cannot handle message",

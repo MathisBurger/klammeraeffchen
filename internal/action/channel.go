@@ -8,6 +8,33 @@ import (
 	"klammerAeffchen/internal/types"
 )
 
+func Disconnect(c *websocket.Conn, dc *discordgo.Session, userId string) {
+	vs := getChannelWithUserId(dc, userId)
+	if vs != nil && dc.VoiceConnections[vs.GuildID] != nil && dc.VoiceConnections[vs.GuildID].ChannelID == vs.ChannelID {
+		vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		err = vc.Disconnect()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		_ = c.WriteJSON(types.WebsocketResponse{
+			Message: "Successfully disconnected",
+			Status:  200,
+			Action:  types.ActionDisconnect,
+			Content: nil,
+		})
+		return
+	}
+	_ = c.WriteJSON(types.WebsocketResponse{
+		Message: "You are not in a channel",
+		Status:  200,
+		Action:  types.ActionDisconnect,
+		Content: nil,
+	})
+}
+
 func ConnectToChannelWithUserId(c *websocket.Conn, dc *discordgo.Session, userId string) {
 	vs := getChannelWithUserId(dc, userId)
 	if vs == nil {

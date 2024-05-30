@@ -8,6 +8,7 @@ const (
 	ActionPlay            = "PLAY"
 	ActionConnect         = "CONNECT"
 	ActionGetCommonGuilds = "GET_COMMON_GUILDS"
+	ActionDisconnect      = "DISCONNECT"
 )
 
 type WebsocketMessage struct {
