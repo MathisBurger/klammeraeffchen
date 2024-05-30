@@ -133,21 +133,19 @@
             <CommonGuildSelect commonGuilds={commonGuilds} bind:selectedGuild={selectedGuild}/>
         </div>
         <div class="cell is-col-span-7">
-            <div class="fixed-grid has-3-cols">
-                {#each sounds as sound (sound)}
-                   <div class="cell">
-                       <div class="card" on:click={() => playSound(sound)} class:greenCard={isPlayed(sound)}>
-                           <div class="card-content">
-                               <div class="content">
-                                   {sound}
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-                {/each}
-            </div>
+            {#each sounds as sound (sound)}
+                <div class="cell mt-2">
+                    <div class="card" on:click={() => playSound(sound)} class:greenCard={isPlayed(sound)}>
+                        <div class="card-content">
+                            <div class="content">
+                                {sound}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {/each}
         </div>
-        <div class="cell">
+        <div class="cell is-col-span-1">
             <button class="button is-primary" on:click={openModal}>Upload audio</button>
         </div>
     </div>

@@ -25,7 +25,7 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		return
 	}
 
-	vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
+	vc, err := getVoiceConnection(dc, vs.GuildID, vs.ChannelID)
 	if err != nil {
 		_ = ws.WriteJSON(types.WebsocketResponse{
 			Message: "Cannot connect to channel " + err.Error(),
@@ -69,6 +69,16 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 			})
 		}
 	}
+}
+
+func getVoiceConnection(dc *discordgo.Session, guildID string, channelID string) (*discordgo.VoiceConnection, error) {
+	for _, conn := range dc.VoiceConnections {
+		if conn.GuildID == guildID && conn.ChannelID == channelID {
+			return conn, nil
+		}
+	}
+	vc, err := dc.ChannelVoiceJoin(guildID, channelID, false, false)
+	return vc, err
 }
 
 func getChannelWithUserId(dc *discordgo.Session, userId string) *discordgo.VoiceState {
