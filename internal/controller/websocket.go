@@ -57,6 +57,8 @@ func ApplicationWebsocket(c *websocket.Conn) {
 		Action:  types.AuthUserID,
 	})
 	discord, _ := c.Locals("discord").(*discordgo.Session)
+	types.WebsocketConnections = append(types.WebsocketConnections, c)
+	c.SetCloseHandler(closeHandler(c))
 	var msg types.WebsocketMessage
 	for {
 		err := c.ReadJSON(&msg)
@@ -85,5 +87,22 @@ func ApplicationWebsocket(c *websocket.Conn) {
 			})
 			break
 		}
+	}
+}
+
+func closeHandler(c *websocket.Conn) func(code int, text string) error {
+	return func(code int, text string) error {
+		var newConns []*websocket.Conn
+		for _, conn := range types.WebsocketConnections {
+			if conn != c {
+				newConns = append(newConns, conn)
+			}
+		}
+		types.WebsocketConnections = newConns
+		err := c.Close()
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 }

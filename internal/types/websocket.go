@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"github.com/gofiber/contrib/websocket"
+	"time"
+)
 
 const (
 	AuthRefreshToken      = "AUTH_REFRESH_TOKEN"
@@ -9,8 +12,11 @@ const (
 	ActionGetCommonGuilds = "GET_COMMON_GUILDS"
 	ActionGetShortAuth    = "GET_SHORT_AUTH"
 	ActionGetAllSounds    = "GET_ALL_SOUNDS"
+	ActionDisconnect      = "DISCONNECT"
 	PlayStatusUpdated     = "PLAY_STATUS_UPDATED"
 )
+
+var WebsocketConnections []*websocket.Conn
 
 type WebsocketMessage struct {
 	Action  string      `json:"action"`

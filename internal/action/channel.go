@@ -39,28 +39,36 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		Status:  200,
 		Content: nil,
 	})
-	_ = ws.WriteJSON(types.WebsocketResponse{
-		Message: "Playing sound",
-		Status:  200,
-		Action:  types.PlayStatusUpdated,
-		Content: playStatus{
-			AudioFile: sound,
-			Status:    true,
-		},
-	})
+	for _, conn := range types.WebsocketConnections {
+		if conn != nil {
+			_ = conn.WriteJSON(types.WebsocketResponse{
+				Message: "Playing sound",
+				Status:  200,
+				Action:  types.PlayStatusUpdated,
+				Content: playStatus{
+					AudioFile: sound,
+					Status:    true,
+				},
+			})
+		}
+	}
 	err = player.Play("./uploads/"+sound, vc, false)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	_ = ws.WriteJSON(types.WebsocketResponse{
-		Message: "Playing sound",
-		Status:  200,
-		Action:  types.PlayStatusUpdated,
-		Content: playStatus{
-			AudioFile: sound,
-			Status:    false,
-		},
-	})
+	for _, conn := range types.WebsocketConnections {
+		if conn != nil {
+			_ = ws.WriteJSON(types.WebsocketResponse{
+				Message: "Playing sound",
+				Status:  200,
+				Action:  types.PlayStatusUpdated,
+				Content: playStatus{
+					AudioFile: sound,
+					Status:    false,
+				},
+			})
+		}
+	}
 }
 
 func getChannelWithUserId(dc *discordgo.Session, userId string) *discordgo.VoiceState {
