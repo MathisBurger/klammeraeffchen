@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -11,11 +10,10 @@ import (
 	"strconv"
 )
 
-func InitializeWebServer(config configuration.Config, discord *discordgo.Session, authChannel chan *pkg.ShortAuthMessage) {
+func InitializeWebServer(config configuration.Config, authChannel chan *pkg.ShortAuthMessage) {
 	app := fiber.New()
 	app.Use(func(ctx *fiber.Ctx) error {
 		ctx.Locals("configuration", config)
-		ctx.Locals("discord", discord)
 		ctx.Locals("auth", authChannel)
 		return ctx.Next()
 	})
@@ -31,9 +29,6 @@ func InitializeWebServer(config configuration.Config, discord *discordgo.Session
 		return fiber.ErrUpgradeRequired
 	})
 	app.Get("/ws", websocket.New(controller.ApplicationWebsocket))
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
 	app.Get("/login", controller.GetOAuthURLForBot)
 	app.Post("/api/uploadAudio", controller.UploadAudio)
 	listenDef := ":" + strconv.Itoa(int(config.ServerPort))

@@ -3,11 +3,9 @@ package main
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
-	"klammerAeffchen/internal"
 	"klammerAeffchen/internal/action"
 	"klammerAeffchen/internal/command"
 	"klammerAeffchen/internal/configuration"
-	"klammerAeffchen/pkg"
 	"log"
 	"os"
 	"os/signal"
@@ -42,9 +40,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	authChannel := make(chan *pkg.ShortAuthMessage, 1)
-	go pkg.ShortShortAuthHandler(authChannel)
-	go internal.InitializeWebServer(config, discord, authChannel)
 	defer discord.Close()
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
