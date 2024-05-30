@@ -8,6 +8,7 @@ const (
 	ActionPlay            = "PLAY"
 	ActionGetCommonGuilds = "GET_COMMON_GUILDS"
 	ActionGetShortAuth    = "GET_SHORT_AUTH"
+	ActionGetAllSounds    = "GET_ALL_SOUNDS"
 )
 
 type WebsocketMessage struct {

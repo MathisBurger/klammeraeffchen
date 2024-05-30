@@ -10,6 +10,7 @@
     let shortAuth: string|null = null;
     let modalOpen = false;
     let selectedFiles: FileList | null = null;
+    let sounds: string[] = [];
 
     const closeModal = () => modalOpen = false;
     const openModal = () => {
@@ -31,6 +32,11 @@
                 body: formData
             });
             closeModal();
+            if (ws !== null) {
+                ws.send(JSON.stringify({
+                    action: "GET_ALL_SOUNDS"
+                }))
+            }
         }
     }
 
@@ -45,9 +51,15 @@
                 if (json.action === "GET_SHORT_AUTH") {
                     shortAuth = json.content;
                 }
+                if (json.action === "GET_ALL_SOUNDS") {
+                    sounds = json.content.sounds;
+                }
             }
             ws.send(JSON.stringify({
                 action: "GET_COMMON_GUILDS"
+            }));
+            ws.send(JSON.stringify({
+                action: "GET_ALL_SOUNDS"
             }));
         }
     });
@@ -97,7 +109,21 @@
         <div class="cell is-col-span-2">
             <CommonGuildSelect commonGuilds={commonGuilds} bind:selectedGuild={selectedGuild}/>
         </div>
-        <div class="cell is-col-span-7"></div>
+        <div class="cell is-col-span-7">
+            <div class="grid has-3-cols">
+                {#each sounds as sound}
+                   <div class="cell">
+                       <div class="card">
+                           <div class="card-content">
+                               <div class="content">
+                                   {sound}
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                {/each}
+            </div>
+        </div>
         <div class="cell">
             <button class="button is-primary" on:click={openModal}>Upload audio</button>
         </div>

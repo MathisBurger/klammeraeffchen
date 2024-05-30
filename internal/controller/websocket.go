@@ -74,6 +74,9 @@ func ApplicationWebsocket(c *websocket.Conn) {
 		case types.ActionGetShortAuth:
 			RequestShortAuth(c)
 			break
+		case types.ActionGetAllSounds:
+			GetAllSounds(c)
+			break
 		default:
 			_ = c.WriteJSON(types.WebsocketResponse{
 				Message: "Cannot handle message",
