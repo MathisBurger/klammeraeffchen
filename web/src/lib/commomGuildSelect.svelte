@@ -13,7 +13,7 @@
     <div class="menu-label">Guilds</div>
     <ul class="menu-list">
         {#each commonGuilds as commonGuild}
-            <li class={commonGuild.id === selectedGuild?.id ? "is-active" : ""}><button on:click={onClick(commonGuild)}>{commonGuild.name}</button></li>
+            <li><button on:click={onClick(commonGuild)} class={commonGuild.id === selectedGuild?.id ? "is-active" : ""}>{commonGuild.name}</button></li>
         {/each}
     </ul>
 </aside>

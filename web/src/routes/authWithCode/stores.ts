@@ -7,5 +7,6 @@ export interface DiscordUser {
     avatar: string;
 }
 
+
 export const websocket: Writable<WebSocket|null> = writable<WebSocket|null>(null);
 export const discordUser: Writable<DiscordUser|null> = writable<DiscordUser|null>(null);

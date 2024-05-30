@@ -9,6 +9,7 @@ export function tryGetWebSocketSession() {
     }
     let websocketUrl = (process.env.NODE_ENV === "production" ? "/ws" : "http://localhost:3000/ws") + "?refreshToken=" + cookie;
     const ws = new WebSocket(websocketUrl);
+    console.log("open socket")
     ws.onmessage = (msg: MessageEvent) => {
         console.log(msg.data);
         const json = JSON.parse(msg.data);
@@ -17,9 +18,12 @@ export function tryGetWebSocketSession() {
             return;
         }
         if (json.action === "AUTH_USER_ID") {
-            websocket.update(() => ws);
             discordUser.update(() => json.content)
             return;
         }
     }
+}
+
+export function initializeWebsocketSession() {
+
 }

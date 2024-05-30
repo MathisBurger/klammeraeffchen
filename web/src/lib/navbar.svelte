@@ -1,37 +1,60 @@
 <script lang="ts">
 
-    import {type DiscordUser, discordUser, websocket} from "../routes/authWithCode/stores";
-    import {tryGetWebSocketSession} from "$lib/session";
-    import {onMount} from "svelte";
+    import {authorizedSocket, type DiscordUser, discordUser, websocket} from "../routes/authWithCode/stores";
     import {page} from "$app/stores";
     import {goto} from "$app/navigation";
+    import {browser} from "$app/environment";
+    import {getCookie, setCookie} from "$lib/cookie";
 
-    let ws: WebSocket|null = null;
+    let ws: WebSocket|null;
     let dcUser: DiscordUser|null = null;
     let loginBaseUrl = process.env.NODE_ENV === "production" ? "/login" : "http://localhost:3000/login"
-    onMount(() => {
-        websocket.subscribe((newWs) => {
-            if (newWs === null) {
-                tryGetWebSocketSession();
-            } else {
-                ws = newWs
-            }
-        });
-        setTimeout(() => {
-            if (ws === null && $page.url.pathname.indexOf("/dashboard") > -1) {
-                goto("/")
-            }
-        }, 1000);
-    })
+
+    const onClose = () => {
+        console.log("close");
+        setCookie("session", "", "");
+        goto("/");
+    }
+
+    const onMessage = (msg: MessageEvent) => {
+        const json = JSON.parse(msg.data);
+        if (json.action === "AUTH_REFRESH_TOKEN") {
+            setCookie("session", json.content.refresh_token, json.content.expires_in);
+            return;
+        }
+        if (json.action === "AUTH_USER_ID") {
+            discordUser.set(json.content)
+            websocket.set(ws);
+            return;
+        }
+    }
+
+    if (browser) {
+        if ($page.url.pathname.indexOf("/authWithCode") === -1) {
+            websocket.subscribe((newWs) => {
+                if (newWs !== null) {
+                    ws = newWs
+                    ws.onmessage = onMessage;
+                    ws.onclose = () => onClose;
+
+                } else if (newWs === null && getCookie("session") !== ""){
+                    let websocketUrl = (process.env.NODE_ENV === "production" ? "/ws" : "http://localhost:3000/ws") + "?refreshToken=" + getCookie("session");
+                    ws = new WebSocket(websocketUrl);
+                    ws.onmessage = onMessage;
+                    ws.onclose = () => onClose;
+                } else {
+                    goto("/");
+                }
+            })
+        }
+    }
     discordUser.subscribe((newUser) => {
-        console.log(newUser);
         dcUser = newUser;
     });
     let userAvatar: string|null = null;
     if (dcUser !== null) {
         userAvatar = "https://cdn.discordapp.com/avatars/" + dcUser?.id + "/" + dcUser?.avatar;
     }
-    console.log(userAvatar)
 
 
 </script>

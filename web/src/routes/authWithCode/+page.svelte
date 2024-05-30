@@ -14,7 +14,7 @@
             ws.onmessage = (msg) => {
                 const json = JSON.parse(msg.data);
                 if (json.action === "AUTH_REFRESH_TOKEN") {
-                    setCookie("session", json.content.refresh_token, json.content.expires_in);
+                    setCookie("session", json.content.refresh_token, "");
                     return;
                 }
                 if (json.action === "AUTH_USER_ID") {
