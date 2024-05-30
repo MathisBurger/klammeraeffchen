@@ -24,6 +24,7 @@ func UploadAudio(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnauthorized)
 	}
 	if err != nil {
+		fmt.Println(err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	if !strings.HasSuffix(file.Filename, ".mp3") {
@@ -31,6 +32,7 @@ func UploadAudio(ctx *fiber.Ctx) error {
 	}
 	destination := fmt.Sprintf("./uploads/%s", file.Filename)
 	if err := ctx.SaveFile(file, destination); err != nil {
+		fmt.Println(err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError)
 	}
 	return ctx.JSON(&uploadAudioResponse{

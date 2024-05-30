@@ -4,6 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"klammerAeffchen/internal/configuration"
 	"klammerAeffchen/internal/controller"
 	"klammerAeffchen/pkg"
@@ -18,6 +19,10 @@ func InitializeWebServer(config configuration.Config, discord *discordgo.Session
 		ctx.Locals("auth", authChannel)
 		return ctx.Next()
 	})
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:5173",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)

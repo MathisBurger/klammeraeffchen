@@ -23,7 +23,7 @@ func ShortShortAuthHandler(channel chan *ShortAuthMessage) {
 		if req.Type == RequestTypeStore {
 			tokenStr := RandStringRunes(64)
 			validTokens = append(validTokens, &shortAuthToken{
-				UserID: req.Data.(string),
+				UserID: "",
 				Token:  tokenStr,
 			})
 			channel <- &ShortAuthMessage{
