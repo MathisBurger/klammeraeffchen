@@ -8,6 +8,7 @@ require (
 	github.com/PuerkitoBio/purell v1.2.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
+	github.com/bwmarrin/dgvoice v0.0.0-20210225172318-caaac756e02e // indirect
 	github.com/bwmarrin/discordgo v0.28.1 // indirect
 	github.com/fasthttp/websocket v1.5.9 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect

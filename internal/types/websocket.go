@@ -12,7 +12,6 @@ const (
 	ActionGetCommonGuilds = "GET_COMMON_GUILDS"
 	ActionGetShortAuth    = "GET_SHORT_AUTH"
 	ActionGetAllSounds    = "GET_ALL_SOUNDS"
-	ActionDisconnect      = "DISCONNECT"
 	PlayStatusUpdated     = "PLAY_STATUS_UPDATED"
 )
 
@@ -33,4 +32,9 @@ type WebsocketResponse struct {
 type WebsocketAuthModel struct {
 	RefreshToken string    `json:"refresh_token"`
 	ExpiresIn    time.Time `json:"expires_in"`
+}
+
+type PlayStatus struct {
+	AudioFile string `json:"audio_file"`
+	Status    bool   `json:"status"`
 }

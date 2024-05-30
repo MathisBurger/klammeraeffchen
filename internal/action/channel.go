@@ -2,7 +2,7 @@ package action
 
 import (
 	"fmt"
-	player "github.com/MathisBurger/discord-dca-player"
+	"github.com/bwmarrin/dgvoice"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/contrib/websocket"
 	"klammerAeffchen/internal/types"
@@ -13,7 +13,7 @@ type playStatus struct {
 	Status    bool   `json:"status"`
 }
 
-func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket.Conn) {
+func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket.Conn, audioEndChan chan bool) {
 	vs := getChannelWithUserId(dc, userId)
 	if vs == nil {
 		_ = ws.WriteJSON(types.WebsocketResponse{
@@ -25,7 +25,7 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 		return
 	}
 
-	vc, err := getVoiceConnection(dc, vs.GuildID, vs.ChannelID)
+	vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
 	if err != nil {
 		_ = ws.WriteJSON(types.WebsocketResponse{
 			Message: "Cannot connect to channel " + err.Error(),
@@ -52,10 +52,12 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 			})
 		}
 	}
-	err = player.Play("./uploads/"+sound, vc, false)
+	dgvoice.PlayAudioFile(vc, "./uploads/"+sound, audioEndChan)
+	err = vc.Disconnect()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	vc.Close()
 	for _, conn := range types.WebsocketConnections {
 		if conn != nil {
 			_ = ws.WriteJSON(types.WebsocketResponse{
@@ -71,16 +73,6 @@ func PlaySound(dc *discordgo.Session, userId string, sound string, ws *websocket
 	}
 }
 
-func getVoiceConnection(dc *discordgo.Session, guildID string, channelID string) (*discordgo.VoiceConnection, error) {
-	for _, conn := range dc.VoiceConnections {
-		if conn.GuildID == guildID && conn.ChannelID == channelID {
-			return conn, nil
-		}
-	}
-	vc, err := dc.ChannelVoiceJoin(guildID, channelID, false, false)
-	return vc, err
-}
-
 func getChannelWithUserId(dc *discordgo.Session, userId string) *discordgo.VoiceState {
 	for _, guild := range dc.State.Guilds {
 		for _, vs := range guild.VoiceStates {
@@ -91,56 +83,3 @@ func getChannelWithUserId(dc *discordgo.Session, userId string) *discordgo.Voice
 	}
 	return nil
 }
-
-/*func Disconnect(c *websocket.Conn, dc *discordgo.Session, userId string) {
-	vs := getChannelWithUserId(dc, userId)
-	if vs != nil && dc.VoiceConnections[vs.GuildID] != nil && dc.VoiceConnections[vs.GuildID].ChannelID == vs.ChannelID {
-		vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		err = vc.Disconnect()
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		_ = c.WriteJSON(types.WebsocketResponse{
-			Message: "Successfully disconnected",
-			Status:  200,
-			Action:  types.ActionDisconnect,
-			Content: nil,
-		})
-		return
-	}
-	_ = c.WriteJSON(types.WebsocketResponse{
-		Message: "You are not in a channel",
-		Status:  200,
-		Action:  types.ActionDisconnect,
-		Content: nil,
-	})
-}
-
-func ConnectToChannelWithUserId(c *websocket.Conn, dc *discordgo.Session, userId string) {
-	vs := getChannelWithUserId(dc, userId)
-	if vs == nil {
-		_ = c.WriteJSON(types.WebsocketResponse{
-			Message: "You are not in a channel",
-			Status:  200,
-			Action:  types.ActionConnect,
-			Content: nil,
-		})
-		return
-	}
-	vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
-	_ = c.WriteJSON(types.WebsocketResponse{
-		Message: "Successfully joined voice channel",
-		Status:  200,
-		Action:  types.ActionConnect,
-		Content: nil,
-	})
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	for {
-		_ = <-vc.OpusRecv
-	}
-}*/

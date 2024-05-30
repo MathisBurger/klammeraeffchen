@@ -58,7 +58,8 @@ func ApplicationWebsocket(c *websocket.Conn) {
 	})
 	discord, _ := c.Locals("discord").(*discordgo.Session)
 	types.WebsocketConnections = append(types.WebsocketConnections, c)
-	c.SetCloseHandler(closeHandler(c))
+	audioEndChan := make(chan bool)
+	c.SetCloseHandler(closeHandler(c, audioEndChan))
 	var msg types.WebsocketMessage
 	for {
 		err := c.ReadJSON(&msg)
@@ -68,7 +69,7 @@ func ApplicationWebsocket(c *websocket.Conn) {
 		}
 		switch msg.Action {
 		case types.ActionPlay:
-			PlaySound(c, discord, msg.Content, me.Id)
+			PlaySound(c, discord, msg.Content, me.Id, audioEndChan)
 			break
 		case types.ActionGetCommonGuilds:
 			CommonGuilds(c, discord, me)
@@ -90,8 +91,9 @@ func ApplicationWebsocket(c *websocket.Conn) {
 	}
 }
 
-func closeHandler(c *websocket.Conn) func(code int, text string) error {
+func closeHandler(c *websocket.Conn, audioEndChan chan bool) func(code int, text string) error {
 	return func(code int, text string) error {
+		audioEndChan <- true
 		var newConns []*websocket.Conn
 		for _, conn := range types.WebsocketConnections {
 			if conn != c {
