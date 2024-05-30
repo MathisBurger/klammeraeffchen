@@ -44,19 +44,6 @@
         }
     }
 
-    const playSound = (sound: string) => {
-        fetch((process.env.NODE_ENV === "production" ? "/api/playSound" : "http://localhost:3000/api/playSound"), {
-            method: "POST",
-            body: JSON.stringify({
-                fileName: sound,
-                userId: dcUser.id
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-    }
-
     websocket.subscribe((nws) => {
         ws = nws;
         if (ws !== null) {
@@ -127,7 +114,7 @@
         <div class="cell is-col-span-9">
             {#each sounds as sound (sound)}
                 <div class="cell mt-2">
-                    <div class="card" on:click={() => playSound(sound)} class:greenCard={isPlayed(sound)}>
+                    <div class="card" class:greenCard={isPlayed(sound)}>
                         <div class="card-content">
                             <div class="content">
                                 {sound}
