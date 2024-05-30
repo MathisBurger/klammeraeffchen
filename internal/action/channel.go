@@ -8,12 +8,24 @@ import (
 	"klammerAeffchen/internal/types"
 )
 
-func ConnectToChannelWithUserId(dc *discordgo.Session, userId string) {
+func ConnectToChannelWithUserId(c *websocket.Conn, dc *discordgo.Session, userId string) {
 	vs := getChannelWithUserId(dc, userId)
 	if vs == nil {
+		_ = c.WriteJSON(types.WebsocketResponse{
+			Message: "You are not in a channel",
+			Status:  200,
+			Action:  types.ActionConnect,
+			Content: nil,
+		})
 		return
 	}
 	vc, err := dc.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, false)
+	_ = c.WriteJSON(types.WebsocketResponse{
+		Message: "Successfully joined voice channel",
+		Status:  200,
+		Action:  types.ActionConnect,
+		Content: nil,
+	})
 	if err != nil {
 		fmt.Println(err.Error())
 	}

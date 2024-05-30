@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import {authorizedSocket, type DiscordUser, discordUser, websocket} from "../routes/authWithCode/stores";
+    import {type DiscordUser, discordUser, websocket} from "../routes/authWithCode/stores";
     import {page} from "$app/stores";
     import {goto} from "$app/navigation";
     import {browser} from "$app/environment";
