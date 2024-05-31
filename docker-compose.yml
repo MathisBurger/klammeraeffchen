@@ -2,7 +2,7 @@ version: '3'
 
 services:
   bot:
-    image: special-img
+    image: ghcr.io/mathisburger/klammeraeffchen
     ports:
       - "3000:3000"
     environment:
