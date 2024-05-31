@@ -30,6 +30,7 @@ func main() {
 		Description: "Sound",
 	})
 	discord.AddHandler(playSoundHandler)
+	_ = discord.UpdateListeningStatus("Sounds")
 
 	defer discord.Close()
 	stop := make(chan os.Signal, 1)
