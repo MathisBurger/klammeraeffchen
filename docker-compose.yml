@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  bot:
+    image: special-img
+    environment:
+      KLAMMERAEFFCHEN_BOTTOKEN: MTI0NDY0OTI2OTIwNjcxMjQ2Mg.GeGhBf.SNL0lQ34goyIeAtGsB4R7iEIiy_xBgyBDYVdIA
+      KLAMMERAEFFCHEN_BOTCLIENTID: 1244649269206712462
+      KLAMMERAEFFCHEN_CLIENTSECRET: lB_9sva538KY9vclYUS7iB-ibAxCbbOw
+      KLAMMERAEFFCHEN_SERVERPORT: 3000
+      KLAMMERAEFFCHEN_OAUTHREDIRECT: http://localhost:3000/authWithCode
+      KLAMMERAEFFCHEN_DASHBOARDURI: http://localhost:3000/dashboard
+    volumes:
+      - ./uploads:/app/uploads
