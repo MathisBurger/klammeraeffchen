@@ -35,7 +35,7 @@ type UserResponseModel struct {
 // AuthorizeWithCode authorizes the user with a code
 func AuthorizeWithCode(code string, config configuration.Config) (*oauth2.Token, error) {
 	conf := &oauth2.Config{
-		RedirectURL:  "http://localhost:5173/authWithCode",
+		RedirectURL:  config.OAuthRedirect,
 		ClientID:     config.BotClientID,
 		ClientSecret: config.ClientSecret,
 		Scopes:       []string{discord.ScopeIdentify},
