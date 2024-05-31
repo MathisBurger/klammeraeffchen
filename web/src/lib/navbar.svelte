@@ -28,6 +28,8 @@
             return;
         }
     }
+    
+    const onLogin = () => goto(loginBaseUrl);
 
     if (browser) {
         if ($page.url.pathname.indexOf("/authWithCode") === -1) {
@@ -61,7 +63,7 @@
 
 <nav class="navbar navbarShadow" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-        <a class="navbar-item" href="#">
+        <a class="navbar-item">
             <img src="/logo.png" alt="logo" />
             <h1 class="is-size-3 ml-2 has-text-weight-bold">Klammeraeffchen</h1>
         </a>
@@ -72,9 +74,9 @@
             <div class="navbar-item">
                 {#if dcUser === null}
                     <div class="buttons">
-                        <a class="button is-link" href="{loginBaseUrl}">
+                        <button class="button is-link" on:click={onLogin}>
                             <strong>Login</strong>
-                        </a>
+                        </button>
                     </div>
                 {:else }
                     <p class="has-text-weight-bold mr-1">{dcUser.global_name}</p>

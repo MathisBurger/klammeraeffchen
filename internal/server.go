@@ -24,6 +24,8 @@ func InitializeWebServer(config configuration.Config, authChannel chan *pkg.Shor
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
+	app.Static("/", "./static")
+
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
