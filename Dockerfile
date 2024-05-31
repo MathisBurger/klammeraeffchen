@@ -30,4 +30,4 @@ ENV KLAMMERAEFFCHEN_OAUTHREDIRECT=redirect
 ENV KLAMMERAEFFCHEN_DASHBOARDURI=dashboard
 
 EXPOSE 3000
-CMD ["./docker.sh"]
+CMD ["sh", "./docker.sh"]

@@ -20,7 +20,7 @@
                 if (json.action === "AUTH_USER_ID") {
                     websocket.set(ws);
                     discordUser.set(json.content)
-                    goto("/dashboard");
+                    goto("/dashboard.html");
                     return;
                 }
                 goto("/")
